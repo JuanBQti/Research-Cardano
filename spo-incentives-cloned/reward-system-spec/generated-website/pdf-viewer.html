@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document Viewer — SPO Incentives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Cardano-aligned typographic stack: Chivo for display / headings
+     (used historically across Cardano marketing materials), Inter for
+     long-form body and UI (de-facto Web3 reading face). -->
+<link href="https://fonts.googleapis.com/css2?family=Chivo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>try{var t=localStorage.getItem('spo-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script>(function(){var v=['fluid','braid','braid-red','dots','overlap','zoom','zoom-full','ada','fluid-red'];var pick=v[Math.floor(Math.random()*v.length)];document.addEventListener('DOMContentLoaded',function(){var h=document.querySelector('.hero');if(h)h.setAttribute('data-banner',pick);});})();</script>
+<!-- Nav dropdown helpers — referenced by inline onclick handlers on
+     each .nav-dd-btn-* button. Defined as window globals so the
+     onclick attributes resolve regardless of assets/site.js load
+     order or extraction state. -->
+<script>
+window.closeAllDd=function(except){
+  document.querySelectorAll('.nav-dd-wrap.open').forEach(function(w){
+    if(!w.contains(except)) w.classList.remove('open');
+  });
+};
+document.addEventListener('click',function(){ window.closeAllDd(null); });
+/* Position the single navbar reading-direction rail so each end sits
+   flush with the outermost zone (Welcome on the left, Implementation on
+   the right), not at the navbar's empty edges. Re-runs on resize. */
+(function(){
+  function fitRail(){
+    var pages = document.querySelector('.nav-pages');
+    if(!pages) return;
+    var rail = pages.querySelector('.nav-flow-rail');
+    if(!rail) return;
+    var zones = pages.querySelectorAll(':scope > .nav-zone, :scope > .nav-tab-implementation, :scope > .nav-tab-roadmap');
+    if(!zones.length) return;
+    var first = zones[0].getBoundingClientRect();
+    var last  = zones[zones.length-1].getBoundingClientRect();
+    var pageRect = pages.getBoundingClientRect();
+    rail.style.left  = (first.left  - pageRect.left + first.width  / 2) + 'px';
+    rail.style.right = (pageRect.right - last.right + last.width / 2) + 'px';
+    rail.classList.add('positioned');
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fitRail);
+  else fitRail();
+  window.addEventListener('resize', fitRail);
+  setTimeout(fitRail, 250);
+})();
+</script>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$']],
+    displayMath: [['$$', '$$']],
+    processEscapes: true
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="assets/site.css?v=1781768285">
+<link rel="stylesheet" href="assets/site-mobile.css?v=1781768285">
+
+
+</head>
+<body data-giscus="1" data-highlights="1">
+<div class="progress-bar" id="progress"></div>
+<nav class="site-nav"><div class="nav-brand">
+<a href="index.html" class="nav-brand-home">
+<img src="assets/cardano/cardano-logomark-white.svg" alt="Cardano" class="cardano-mark">
+<span class="nav-brand-title-cardano">Cardano Reward System</span>
+<span class="nav-brand-sep" aria-hidden="true">/</span>
+<span class="nav-brand-title">The Holistic Reading</span>
+<span class="nav-brand-sep-vr" aria-hidden="true"></span>
+<span class="nav-brand-attribution">
+  <span class="nav-brand-attribution-prefix">by</span>
+  <img src="assets/iog-full-logo-white.png" alt="Input | Output Group" class="nav-brand-wordmark">
+  <span class="nav-brand-attribution-sep" aria-hidden="true">·</span>
+  <span class="nav-brand-org"><span class="cbu-dot" aria-hidden="true"></span>Cardano Business Unit</span>
+</span>
+</a>
+<div class="nav-brand-right">
+<button class="pdf-export" onclick="printAsPdf()" title="Save this page as PDF" aria-label="Save as PDF">PDF</button>
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light theme" aria-label="Toggle theme">☀</button>
+</div>
+</div>
+<div class="nav-pages">
+
+<!-- Single reading-direction rail spanning the navbar. Buttons sit on top
+     with their own backgrounds, so they read as nodes / stops along the
+     line. The line runs left→right toward the Implementation destination
+     on the right, mirroring the in-page Stage 01→06 stepper, without
+     repeating an arrow between every pair of buttons. -->
+<div class="nav-flow-rail" aria-hidden="true">
+  <span class="nav-flow-rail-line"></span>
+  <svg class="nav-flow-rail-head" viewBox="0 0 12 10" aria-hidden="true">
+    <path d="M11 5 L1 5 M1 5 L5 1 M1 5 L5 9" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
+
+<!-- Zone 1 (far-left, home anchor) — Welcome: start of the holistic reading.
+     Visual order is set by flex `order` in site.css (.nav-zone-* rules);
+     DOM order is kept stable so the rail-positioning JS still anchors on
+     the DOM-first (Welcome) and DOM-last (Implementation) zones. -->
+<div class="nav-zone nav-zone-welcome">
+<a href="index.html" class="nav-tab-welcome" title="Welcome — start here: the holistic reading landing page">Welcome</a>
+</div>
+
+
+<!-- Zone 1 (left anchor) — Solution Evaluation: CIP candidates evaluated against V2 -->
+<div class="nav-zone nav-zone-solution">
+<div class="nav-dd-wrap nav-dd-wrap-light">
+<button class="nav-dd-btn-light nav-dd-btn-solution" onclick="event.stopPropagation();closeAllDd(this);this.parentElement.classList.toggle('open')" aria-expanded="false">Existing CIPs<svg class="nav-dd-chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M2 2.5 L6 6 L10 2.5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<div class="nav-dd-panel-light nav-dd-panel-solution">
+  <div class="nav-dd-stratum">
+    <div class="nav-dd-stratum-head">
+      <span class="nav-dd-stratum-badge nav-dd-stratum-badge-solution">Solution Evaluation</span>
+      <span class="nav-dd-stratum-meta">Four CIPs evaluated against the V2 milestones — problems validated, root-level fix recommended first; analytical directions discussed in the §4 of the synthesis</span>
+    </div>
+    <a href="solution-evaluation.html" class="nav-dd-ref nav-dd-ref-hero">
+      <span class="nav-dd-ref-title">Intro &amp; Conclusion of the 4 CIPs</span>
+      <span class="nav-dd-ref-cite">Coverage matrix, cumulative findings, root-level-fix-first recommendation on the bundle</span>
+    </a>
+    <div class="nav-dd-ref-group-label nav-dd-ref-group-label-flow">Stake-Cap Layer — Bind Pledge on σ′</div>
+    <a href="stake-cap.html" class="nav-dd-ref nav-dd-ref-sub nav-dd-ref-flow nav-dd-ref-synthesis">
+      <span class="nav-dd-ref-title">CIP evaluation synthesis</span>
+      <span class="nav-dd-ref-cite">Two stake-cap shapes, same intent<span class="nav-dd-ref-stage">Index</span></span>
+    </a>
+    <a href="cip-0050.html" class="nav-dd-ref nav-dd-ref-sub nav-dd-ref-deep">
+      <span class="nav-dd-ref-title">CIP-0050 — Pledge Leverage</span>
+      <span class="nav-dd-ref-cite">Validated problem; root-level A(ν, π) repair recommended first<span class="nav-dd-ref-stage">Root-fix first</span></span>
+    </a>
+    <a href="cip-0037.html" class="nav-dd-ref nav-dd-ref-sub nav-dd-ref-deep">
+      <span class="nav-dd-ref-title">CIP-0037 — Dynamic Saturation</span>
+      <span class="nav-dd-ref-cite">Validated problem; same target as CIP-0050, root-level fix first<span class="nav-dd-ref-stage">Root-fix first</span></span>
+    </a>
+    <div class="nav-dd-ref-group-label nav-dd-ref-group-label-flow">Fee Layer — Operator/Member Split</div>
+    <a href="fee-layer.html" class="nav-dd-ref nav-dd-ref-sub nav-dd-ref-flow nav-dd-ref-synthesis">
+      <span class="nav-dd-ref-title">CIP evaluation synthesis</span>
+      <span class="nav-dd-ref-cite">Pricing-as-viability conflation<span class="nav-dd-ref-stage">Index</span></span>
+    </a>
+    <a href="cip-0023.html" class="nav-dd-ref nav-dd-ref-sub nav-dd-ref-deep">
+      <span class="nav-dd-ref-title">CIP-0023 — Fair Min Fees</span>
+      <span class="nav-dd-ref-cite">Validated problem; folds into CIP-0082 stage 2<span class="nav-dd-ref-stage">Folds in</span></span>
+    </a>
+    <a href="cip-0082.html" class="nav-dd-ref nav-dd-ref-sub nav-dd-ref-deep">
+      <span class="nav-dd-ref-title">CIP-0082 — Improved Rewards Scheme</span>
+      <span class="nav-dd-ref-cite">Validated problem; viability at source, k-raise after a stake-cap precondition<span class="nav-dd-ref-stage">Root-fix first</span></span>
+    </a>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- Zone 2 — Solution Design (solution-design.html): the canonical V2 working document. Replaced an earlier V2 Specification page that has been retired. -->
+<div class="nav-zone nav-zone-output">
+<a href="solution-design.html" class="nav-tab-roadmap" title="Solution Design — prioritising the nine problems into directions and milestones">Solution Design</a>
+</div>
+
+
+<!-- Zone 2.7 — Induced Problems (proto-CPS bridge between diagnostic and V2 spec) -->
+<div class="nav-zone nav-zone-problems">
+<a href="problem-statements.html" class="nav-tab-problems-big" title="The structural problems the diagnostic induces from on-chain evidence">Induced Problems</a>
+</div>
+
+
+<!-- Zone 3 — Mainnet Diagnostic (observed reality) -->
+<div class="nav-zone nav-zone-diag">
+<div class="nav-dd-wrap nav-dd-wrap-light">
+<button class="nav-dd-btn-light nav-dd-btn-diag" onclick="event.stopPropagation();closeAllDd(this);this.parentElement.classList.toggle('open')" aria-expanded="false">Mainnet Diagnostic<svg class="nav-dd-chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M2 2.5 L6 6 L10 2.5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<div class="nav-dd-panel-light nav-dd-panel-diag">
+  <div class="nav-dd-stratum">
+    <div class="nav-dd-stratum-head">
+      <span class="nav-dd-stratum-badge nav-dd-stratum-badge-diagnostic">Mainnet Diagnostic</span>
+      <span class="nav-dd-stratum-meta">What mainnet is actually doing — Reward-Flow evidence, the staking census, and the prior report</span>
+    </div>
+    <a href="diagnostic.html" class="nav-dd-ref nav-dd-ref-hero">
+      <span class="nav-dd-ref-title">The Diagnostic</span>
+      <span class="nav-dd-ref-cite">Full narrative — observations, problem induction, and sub-report links</span>
+    </a>
+    <a href="census.html" class="nav-dd-ref nav-dd-ref-sub">
+      <span class="nav-dd-ref-title">The Staking Census<span class="nav-dd-ref-new">New</span></span>
+      <span class="nav-dd-ref-cite">The four game player populations of Cardano's reward pipeline<span class="nav-dd-ref-stage">Evidence</span></span>
+    </a>
+    <div class="nav-dd-ref-group-label nav-dd-ref-group-label-flow">Reward Flow</div>
+    <a href="reserves.html" class="nav-dd-ref nav-dd-ref-sub nav-dd-ref-flow">
+      <span class="nav-dd-ref-title">Reserves<span class="nav-dd-ref-new">New</span></span>
+      <span class="nav-dd-ref-cite">Treasury & pool-pot distribution<span class="nav-dd-ref-stage">Stage 1</span></span>
+    </a>
+    <a href="pools.html" class="nav-dd-ref nav-dd-ref-sub nav-dd-ref-flow">
+      <span class="nav-dd-ref-title">Pools<span class="nav-dd-ref-new">New</span></span>
+      <span class="nav-dd-ref-cite">Distribution gaps across the pool population<span class="nav-dd-ref-stage">Stage 2</span></span>
+    </a>
+    <a href="operator.html" class="nav-dd-ref nav-dd-ref-sub nav-dd-ref-flow">
+      <span class="nav-dd-ref-title">Operators/Delegators<span class="nav-dd-ref-new">New</span></span>
+      <span class="nav-dd-ref-cite">The operator's cut versus the delegator share<span class="nav-dd-ref-stage">Stage 3</span></span>
+    </a>
+    <div class="nav-dd-ref-group-label">Sandbox</div>
+    <a href="mpo-topology.html" class="nav-dd-ref nav-dd-ref-sub">
+      <span class="nav-dd-ref-title">SPO Topology<span class="nav-dd-ref-new">New</span></span>
+      <span class="nav-dd-ref-cite">Interactive map — every active pool's hosting provider, region, ASN, saturation tier<span class="nav-dd-ref-stage">Play</span></span>
+    </a>
+    <div class="nav-dd-ref-group-label">Past Analysis</div>
+    <a href="pdf-viewer.html?file=references/previous-analasys/spo-incentives-analysis_lopez-de-lara_2025.pdf" class="nav-dd-ref">
+      <span class="nav-dd-ref-title">Nov 2025 — Analysis of Cardano's Incentive Mechanism</span>
+      <span class="nav-dd-ref-cite">Lopez de Lara · prior mainnet diagnostic<span class="nav-dd-ref-tag">SD-L</span></span>
+      <span class="nav-dd-ref-pdf">PDF</span>
+    </a>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- Zone 4 — The Intended Game (formerly "Design Support" — intended mechanism + research foundations) -->
+<div class="nav-zone nav-zone-design">
+<div class="nav-dd-wrap nav-dd-wrap-light">
+<button class="nav-dd-btn-light nav-dd-btn-design" onclick="event.stopPropagation();closeAllDd(this);this.parentElement.classList.toggle('open')" aria-expanded="false">The Intended Game<svg class="nav-dd-chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M2 2.5 L6 6 L10 2.5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<div class="nav-dd-panel-light nav-dd-panel-design">
+  <div class="nav-dd-stratum">
+    <div class="nav-dd-stratum-head">
+      <span class="nav-dd-stratum-badge nav-dd-stratum-badge-design">The Intended Game</span>
+      <span class="nav-dd-stratum-meta">The intended mechanism — formal spec, narrative companion, and the academic antecedents the design rests on</span>
+    </div>
+    <a href="intended-game.html" class="nav-dd-ref">
+      <span class="nav-dd-ref-title">Plain-prose narrative<span class="nav-dd-ref-new">New</span></span>
+      <span class="nav-dd-ref-cite">Companion to SL-D1 — fills the narrative gap the formal spec left open</span>
+    </a>
+    <a href="pdf-viewer.html?file=references/design-specs/delegation-incentives-design-spec_kant-brunjes-coutts_2019.pdf" class="nav-dd-ref">
+      <span class="nav-dd-ref-title">Delegation Incentives Design Specification</span>
+      <span class="nav-dd-ref-cite">Kant · Brünjes · Coutts — 2019<span class="nav-dd-ref-tag">SL-D1</span></span>
+      <span class="nav-dd-ref-pdf">PDF</span>
+    </a>
+    <div class="nav-dd-ref-group-label">Research Papers</div>
+    <a href="pdf-viewer.html?file=references/research-papers/reward-sharing-schemes_brunjes-kiayias-et-al_2020.pdf" class="nav-dd-ref nav-dd-ref-sub">
+      <span class="nav-dd-ref-title">Reward Sharing Schemes for Stake Pools</span>
+      <span class="nav-dd-ref-cite">Brünjes · Kiayias · Koutsoupias · Stouka — 2020<span class="nav-dd-ref-tag">RSS-2020</span></span>
+      <span class="nav-dd-ref-pdf">PDF</span>
+    </a>
+    <a href="pdf-viewer.html?file=references/research-papers/incentives-against-power-grabs_kiayias-et-al_2021.pdf" class="nav-dd-ref nav-dd-ref-sub">
+      <span class="nav-dd-ref-title">Incentives Against Power Grabs</span>
+      <span class="nav-dd-ref-cite">Kiayias et al. — 2021<span class="nav-dd-ref-tag">IAPG</span></span>
+      <span class="nav-dd-ref-pdf">PDF</span>
+    </a>
+    <a href="pdf-viewer.html?file=references/research-papers/balancing-participation-decentralization_kiayias-et-al_2024.pdf" class="nav-dd-ref nav-dd-ref-sub">
+      <span class="nav-dd-ref-title">Balancing Participation & Decentralization</span>
+      <span class="nav-dd-ref-cite">Kiayias et al. — 2024<span class="nav-dd-ref-tag">BPD</span></span>
+      <span class="nav-dd-ref-pdf">PDF</span>
+    </a>
+    <a href="https://arxiv.org/abs/2505.04422" class="nav-dd-ref nav-dd-ref-sub" rel="noopener" target="_blank">
+      <span class="nav-dd-ref-title">Reward Sharing in PoS with No-Pool-Choice Delegators</span>
+      <span class="nav-dd-ref-cite">Kiayias et al. — AFT 2025<span class="nav-dd-ref-tag">AFT-2025</span></span>
+      <span class="nav-dd-ref-pdf">arXiv</span>
+    </a>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- Zone 5 (far-right anchor) — Cardano Constitution (the governance ceiling V2 must respect) -->
+<div class="nav-zone nav-zone-constitution">
+<div class="nav-dd-wrap nav-dd-wrap-light">
+<button class="nav-dd-btn-light nav-dd-btn-constitution" onclick="event.stopPropagation();closeAllDd(this);this.parentElement.classList.toggle('open')" aria-expanded="false">Constitution<svg class="nav-dd-chev" viewBox="0 0 12 8" aria-hidden="true"><path d="M2 2.5 L6 6 L10 2.5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<div class="nav-dd-panel-light nav-dd-panel-constitution">
+  <div class="nav-dd-stratum">
+    <div class="nav-dd-stratum-head">
+      <span class="nav-dd-stratum-badge nav-dd-stratum-badge-constitution">Cardano Constitution v2</span>
+      <span class="nav-dd-stratum-meta">The governance document the protocol operates under (ratified at epoch 609) — every milestone in the V2 spec must comply with it</span>
+    </div>
+    <a href="pdf-viewer.html?file=references/governance/cardano-constitution-2.pdf" class="nav-dd-ref">
+      <span class="nav-dd-ref-title">Cardano Blockchain Ecosystem Constitution</span>
+      <span class="nav-dd-ref-cite">IntersectMBO — ratified at epoch 609 (v2)<span class="nav-dd-ref-tag">CONST-2</span></span>
+      <span class="nav-dd-ref-pdf">PDF</span>
+    </a>
+    <a href="references/governance/cardano-constitution-2.pdf" class="nav-dd-ref nav-dd-ref-sub" download>
+      <span class="nav-dd-ref-title">Download the PDF</span>
+      <span class="nav-dd-ref-cite">Local copy on this site<span class="nav-dd-ref-stage">Download</span></span>
+    </a>
+    <a href="https://github.com/IntersectMBO/cardano-constitution/tree/main/cardano-constitution-2" class="nav-dd-ref nav-dd-ref-sub" rel="noopener" target="_blank">
+      <span class="nav-dd-ref-title">Source on GitHub</span>
+      <span class="nav-dd-ref-cite">Canonical markdown — IntersectMBO/cardano-constitution<span class="nav-dd-ref-stage">Source</span></span>
+    </a>
+    <a href="solution-design.html#1-constitutional-framework" class="nav-dd-ref nav-dd-ref-sub">
+      <span class="nav-dd-ref-title">Constitutional framework in the Solution Design</span>
+      <span class="nav-dd-ref-cite">How the Solution Design milestones cite the Constitution — three tenets + guardrails<span class="nav-dd-ref-stage">In Solution Design</span></span>
+    </a>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- Zone 8 (far-right destination flag) — Build Estimation / Scoping: the build
+     target this whole pipeline aims at. Kept DOM-last so the rail JS anchors
+     the right end here; placed visually rightmost via flex `order` in CSS. -->
+<div class="nav-zone nav-zone-implementation">
+<a href="build-scoping.html" class="nav-tab-implementation" title="Build Estimation / Scoping — sizing the build for the recommended V2 reform">Build Estimation / Scoping</a>
+</div>
+
+</div>
+<div class="nav-breadcrumb"></div>
+</nav>
+<style>
+.pdf-toolbar{display:flex;align-items:center;gap:16px;padding:10px 28px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0}
+.pdf-title{flex:1;font:600 13px/1 var(--font-display);letter-spacing:.6px;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pdf-toolbar a{font-size:12px;color:var(--text-secondary);text-decoration:none;border:1px solid var(--border);border-radius:4px;padding:5px 12px;transition:color .15s,border-color .15s;white-space:nowrap}
+.pdf-toolbar a:hover{color:var(--cardano-blue);border-color:var(--cardano-blue)}
+.pdf-frame{flex:1;width:100%;border:0;background:var(--bg-warm);min-height:calc(100vh - 240px)}
+.pdf-error{padding:40px;color:var(--text-secondary);text-align:center;font:400 14px/1.5 var(--font-body)}
+.pdf-error a{color:var(--cardano-blue);text-decoration:underline}
+[data-theme=dark] .pdf-toolbar{background:var(--bg);border-bottom-color:var(--border)}
+[data-theme=dark] .pdf-toolbar a{color:var(--text-body)}
+</style>
+<div class="pdf-toolbar" id="toolbar">
+  <span class="pdf-title" id="pdf-title">Loading document…</span>
+  <a id="pdf-download" href="#" download title="Download PDF">Download ↓</a>
+  <a id="pdf-newtab" href="#" target="_blank" title="Open in new tab">New tab ↗</a>
+</div>
+<iframe class="pdf-frame" id="pdf-frame"></iframe>
+<script>
+(function(){
+  var titles={};
+  titles["delegation-incentives-design-spec_kant-brunjes-coutts_2019.pdf"]="Delegation & Incentives Design Spec";
+  titles["reward-sharing-schemes_brunjes-kiayias-et-al_2020.pdf"]="Reward Sharing Schemes for Stake Pools";
+  titles["incentives-against-power-grabs_kiayias-et-al_2021.pdf"]="Stake Pool Incentives Against Power Grabs";
+  titles["balancing-participation-decentralization_kiayias-et-al_2024.pdf"]="Balancing Participation & Decentralization";
+  titles["spo-incentives-analysis_lopez-de-lara_2025.pdf"]="SPO Incentives Analysis";
+  titles["cardano-constitution-2.pdf"]="Cardano Constitution V2";
+  var params=new URLSearchParams(window.location.search);
+  var file=params.get('file')||'';
+  if(file){
+    document.getElementById('pdf-frame').src=file;
+    document.getElementById('pdf-download').href=file;
+    document.getElementById('pdf-newtab').href=file;
+    var basename=file.split('/').pop();
+    var title=titles[basename]||basename.replace(/\.pdf$/i,'').replace(/[-_]/g,' ');
+    document.getElementById('pdf-title').textContent=title;
+    document.title=title+' — SPO Incentives';
+  } else {
+    document.getElementById('toolbar').style.display='none';
+    document.getElementById('pdf-frame').style.display='none';
+    var err=document.createElement('div');
+    err.className='pdf-error';
+    err.innerHTML='<div>No document specified.</div><a href="index.html">← Back to report</a>';
+    document.body.insertBefore(err,document.querySelector('.site-footer'));
+  }
+})();
+</script>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col footer-col-brand">
+      <a href="index.html" class="footer-cardano-mark" title="Cardano Reward System / The Holistic Reading — home">
+        <svg class="footer-cardano-symbol" viewBox="0 0 64 64" aria-hidden="true"><g fill="currentColor"><circle cx="32" cy="10" r="3"/><circle cx="32" cy="54" r="3"/><circle cx="51.05" cy="21" r="3"/><circle cx="12.94" cy="21" r="3"/><circle cx="51.05" cy="43" r="3"/><circle cx="12.94" cy="43" r="3"/></g><g fill="currentColor" opacity="0.5"><circle cx="22.5" cy="14.5" r="2"/><circle cx="41.5" cy="14.5" r="2"/><circle cx="22.5" cy="49.5" r="2"/><circle cx="41.5" cy="49.5" r="2"/><circle cx="55.5" cy="32" r="2"/><circle cx="8.5" cy="32" r="2"/></g></svg>
+        <span class="footer-cardano-label">Cardano Reward System / The Holistic Reading</span>
+      </a>
+      <p class="footer-tagline">An evidence-driven proposal for Cardano&rsquo;s incentive mechanism.</p>
+      <a href="https://cardano.org" class="footer-network-link" rel="noopener" target="_blank">
+        For the Cardano network<span class="footer-ext" aria-hidden="true">↗</span>
+      </a>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-heading">Specification</h4>
+      <ul class="footer-links">
+        <li><a href="solution-design.html">Solution Design</a></li>
+        <li><a href="intended-game.html">The Intended Game</a></li>
+        <li><a href="problem-statements.html">Induced Problems</a></li>
+        <li><a href="solution-evaluation.html">Solution Evaluation</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-heading">Repository</h4>
+      <ul class="footer-links">
+        <li><a href="https://github.com/input-output-hk/spo-incentives" rel="noopener" target="_blank">View on GitHub<span class="footer-ext" aria-hidden="true">↗</span></a></li><li><a href="https://github.com/input-output-hk/spo-incentives/issues/new" rel="noopener" target="_blank">File an issue<span class="footer-ext" aria-hidden="true">↗</span></a></li><li><a href="https://github.com/input-output-hk/spo-incentives/discussions" rel="noopener" target="_blank">Discussions<span class="footer-ext" aria-hidden="true">↗</span></a></li><li><a href="https://github.com/input-output-hk/spo-incentives/blob/main/LICENSE" rel="noopener" target="_blank">License<span class="footer-ext" aria-hidden="true">↗</span></a></li>
+      </ul>
+    </div>
+    <div class="footer-col footer-col-meta">
+      <h4 class="footer-heading">Built by</h4>
+      <a href="https://iohk.io" class="footer-iog" rel="noopener" target="_blank" title="Input | Output Group">
+        <img src="assets/iog-full-logo-white.png" alt="Input | Output Group" class="footer-iog-mark">
+      </a>
+      <div class="footer-iog-org">
+        <span class="cbu-dot" aria-hidden="true"></span>Cardano Business Unit
+      </div>
+      <div class="footer-meta">
+        <div class="footer-meta-row"><span class="footer-meta-key">Edition</span><span class="footer-meta-val">2026/06/18</span></div>
+        <div class="footer-meta-row"><span class="footer-meta-key">Author</span><span class="footer-meta-val"><a href="https://www.linkedin.com/in/nhenin/" rel="noopener" target="_blank">Nicolas Henin<span class="footer-ext" aria-hidden="true">↗</span></a></span></div>
+        <div class="footer-meta-row"><span class="footer-meta-key">Source</span><span class="footer-meta-val"><a href="https://github.com/input-output-hk/spo-incentives" rel="noopener" target="_blank">input-output-hk/spo-incentives<span class="footer-ext" aria-hidden="true">↗</span></a></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-rule" aria-hidden="true"></div>
+  <div class="footer-bottom">
+    <span class="footer-copy">&copy; 2026 Input Output Group &middot; Released under an open licence</span>
+    <span class="footer-tag">Built by I|O Group &middot; For the Cardano network</span>
+  </div>
+</footer>
+<div class="lightbox-overlay" id="lightbox"><img id="lb-img" src="" alt=""></div>
+<a href="#" class="back-top" id="btt">&uarr;</a>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<script>
+if (window.mermaid) {
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    securityLevel: 'loose',
+    themeVariables: { fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' },
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+  });
+}
+</script>
+<script src="assets/site.js?v=1781768285"></script>
+<script src="assets/site-mobile.js?v=1781768285"></script>
+</body>
+</html>
