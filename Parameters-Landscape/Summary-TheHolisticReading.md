@@ -177,12 +177,12 @@ of it.
 
 ## Repo Sources Used
 
-- [`README.md`](README.md)
-- [`reward-system-spec/README.md`](reward-system-spec/README.md)
-- [`reward-system-spec/the-intended-game/README.md`](reward-system-spec/the-intended-game/README.md)
-- [`reward-system-spec/diagnostic/findings.md`](reward-system-spec/diagnostic/findings.md)
-- [`reward-system-spec/solution-evaluation/README.md`](reward-system-spec/solution-evaluation/README.md)
-- [`reward-system-spec/solution-evaluation/v2-proposal/new-CIP.md`](reward-system-spec/solution-evaluation/v2-proposal/new-CIP.md)
-- [`reward-system-spec/implementation-scope/README.md`](reward-system-spec/implementation-scope/README.md)
-- [`reward-system-spec/whats-next/README.md`](reward-system-spec/whats-next/README.md)
-- [`report-november-2025/report.tex`](report-november-2025/report.tex)
+- [`README.md`](https://github.com/input-output-hk/spo-incentives/blob/main/README.md)
+- [`reward-system-spec/README.md`](https://github.com/input-output-hk/spo-incentives/blob/main/reward-system-spec/README.md)
+- [`reward-system-spec/the-intended-game/README.md`](https://github.com/input-output-hk/spo-incentives/blob/main/reward-system-spec/the-intended-game/README.md)
+- [`reward-system-spec/diagnostic/findings.md`](https://github.com/input-output-hk/spo-incentives/blob/main/reward-system-spec/diagnostic/findings.md)
+- [`reward-system-spec/solution-evaluation/README.md`](https://github.com/input-output-hk/spo-incentives/blob/main/reward-system-spec/solution-evaluation/README.md)
+- [`reward-system-spec/solution-evaluation/v2-proposal/new-CIP.md`](https://github.com/input-output-hk/spo-incentives/blob/main/reward-system-spec/solution-evaluation/v2-proposal/new-CIP.md)
+- [`reward-system-spec/implementation-scope/README.md`](https://github.com/input-output-hk/spo-incentives/blob/main/reward-system-spec/implementation-scope/README.md)
+- [`reward-system-spec/whats-next/README.md`](https://github.com/input-output-hk/spo-incentives/blob/main/reward-system-spec/whats-next/README.md)
+- [`report-november-2025/report.tex`](https://github.com/input-output-hk/spo-incentives/blob/main/report-november-2025/report.tex)
