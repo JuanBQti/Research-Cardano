@@ -1,1 +1,1 @@
-# Incentive Mechanisms
+# Research Incentives and Reward Scheme - Cardano
